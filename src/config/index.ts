@@ -12,6 +12,7 @@ if (result.error && process.env.NODE_ENV !== 'production') {
 export const config = {
   env: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT || '3500', 10),
+  serviceName: process.env.SERVICE_NAME || 'hms-api',
   
   database: {
     host: process.env.DB_HOST || 'localhost',
