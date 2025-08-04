@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMS API - Developer Onboarding Guide</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface-hover: #1a1a1a;
+            --border: #2a2a2a;
+            --text: #ffffff;
+            --text-dim: #a0a0a0;
+            --primary: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --purple: #8b5cf6;
+            --pink: #ec4899;
+            --cyan: #06b6d4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* Grid Layout */
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 2rem 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            padding: 0 2rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-dim);
+            padding: 0 2rem 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 2rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: var(--surface-hover);
+            color: var(--text);
+            border-left-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: var(--surface-hover);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 1.25rem;
+        }
+
+        /* Main Content */
+        .main {
+            padding: 3rem;
+            max-width: 1400px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-dim);
+        }
+
+        /* Visual Sections */
+        .visual-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            transition: all 0.3s;
+        }
+
+        .visual-section:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .section-header {
+            padding: 1.5rem;
+            background: var(--surface-hover);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-icon {
+            font-size: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .section-content {
+            padding: 2rem;
+        }
+
+        /* Quick Start Cards */
+        .quick-start {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+        }
+
+        .step-card {
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--purple));
+            transform: translateX(-100%);
+            transition: transform 0.3s;
+        }
+
+        .step-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .step-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--purple));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-command {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.5rem;
+            font-family: 'Consolas', monospace;
+            font-size: 0.875rem;
+            color: var(--success);
+        }
+
+        /* Architecture Visual */
+        .arch-visual {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .layer-card {
+            background: var(--surface-hover);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .layer-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .layer-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .layer-card.controller::before { background: var(--primary); }
+        .layer-card.service::before { background: var(--success); }
+        .layer-card.repository::before { background: var(--purple); }
+
+        .layer-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .layer-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .layer-description {
+            font-size: 0.875rem;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+        }
+
+        .layer-files {
+            font-size: 0.875rem;
+            color: var(--cyan);
+            font-family: 'Consolas', monospace;
+        }
+
+        /* Tech Stack Grid */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1rem;
+        }
+
+        .tech-card {
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(59,130,246,0.3), transparent);
+            transition: all 0.5s;
+            transform: translate(-50%, -50%);
+        }
+
+        .tech-card:hover::before {
+            width: 150%;
+            height: 150%;
+        }
+
+        .tech-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .tech-logo {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tech-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        /* Code Examples */
+        .code-example {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .code-header {
+            background: var(--surface-hover);
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .code-language {
+            color: var(--primary);
+        }
+
+        .code-copy {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .code-copy:hover {
+            background: var(--purple);
+        }
+
+        .code-content {
+            padding: 1.5rem;
+            font-family: 'Consolas', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: #60a5fa;
+            overflow-x: auto;
+        }
+
+        /* Flow Diagram */
+        .flow-container {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .mermaid {
+            text-align: center;
+        }
+
+        /* API Methods Grid */
+        .api-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .api-card {
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.2s;
+        }
+
+        .api-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .method-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .method-get { background: var(--success); color: white; }
+        .method-post { background: var(--primary); color: white; }
+        .method-put { background: var(--warning); color: white; }
+        .method-delete { background: var(--error); color: white; }
+
+        .api-path {
+            font-family: 'Consolas', monospace;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .api-desc {
+            font-size: 0.875rem;
+            color: var(--text-dim);
+        }
+
+        /* Best Practices */
+        .practice-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .practice-card {
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+            padding-left: 3rem;
+        }
+
+        .practice-icon {
+            position: absolute;
+            left: 1rem;
+            top: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .practice-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .practice-desc {
+            font-size: 0.875rem;
+            color: var(--text-dim);
+        }
+
+        /* Status Badge */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status.ready {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .status.beta {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .status.new {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--purple);
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--purple));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.5);
+            transition: all 0.3s;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(59, 130, 246, 0.7);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .quick-start {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .arch-visual {
+                grid-template-columns: 1fr;
+            }
+            
+            .tech-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--surface);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">HMS API Docs</div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Getting Started</div>
+                <a href="#welcome" class="nav-item active">
+                    <span class="nav-icon">👋</span>
+                    <span>Welcome</span>
+                </a>
+                <a href="#quickstart" class="nav-item">
+                    <span class="nav-icon">🚀</span>
+                    <span>Quick Start</span>
+                </a>
+                <a href="#architecture" class="nav-item">
+                    <span class="nav-icon">🏗️</span>
+                    <span>Architecture</span>
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Development</div>
+                <a href="#setup" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Environment Setup</span>
+                </a>
+                <a href="#database" class="nav-item">
+                    <span class="nav-icon">🗄️</span>
+                    <span>Database</span>
+                </a>
+                <a href="#api" class="nav-item">
+                    <span class="nav-icon">🔌</span>
+                    <span>API Endpoints</span>
+                </a>
+                <a href="#auth" class="nav-item">
+                    <span class="nav-icon">🔐</span>
+                    <span>Authentication</span>
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Best Practices</div>
+                <a href="#patterns" class="nav-item">
+                    <span class="nav-icon">🎯</span>
+                    <span>Code Patterns</span>
+                </a>
+                <a href="#testing" class="nav-item">
+                    <span class="nav-icon">🧪</span>
+                    <span>Testing</span>
+                </a>
+                <a href="#deployment" class="nav-item">
+                    <span class="nav-icon">🚢</span>
+                    <span>Deployment</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Hero Section -->
+            <section id="welcome" class="hero">
+                <h1>HMS API Developer Portal</h1>
+                <p>Everything you need to build amazing healthcare management solutions</p>
+                
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">API Endpoints</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">JWT</div>
+                        <div class="stat-label">Authentication</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">TypeScript</div>
+                        <div class="stat-label">Type Safety</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Test Coverage</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Start Section -->
+            <section id="quickstart" class="visual-section">
+                <div class="section-header">
+                    <span class="section-icon">🚀</span>
+                    <h2 class="section-title">Quick Start Guide</h2>
+                    <span class="status ready">Ready in 5 mins</span>
+                </div>
+                <div class="section-content">
+                    <div class="quick-start">
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <div class="step-title">Clone Repo</div>
+                            <div class="step-command">git clone [repo]</div>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <div class="step-title">Install Deps</div>
+                            <div class="step-command">npm install</div>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <div class="step-title">Setup DB</div>
+                            <div class="step-command">npm run db:setup</div>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-number">4</div>
+                            <div class="step-title">Configure</div>
+                            <div class="step-command">cp .env.example .env</div>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-number">5</div>
+                            <div class="step-title">Start Dev</div>
+                            <div class="step-command">npm run dev</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Architecture Section -->
+            <section id="architecture" class="visual-section">
+                <div class="section-header">
+                    <span class="section-icon">🏗️</span>
+                    <h2 class="section-title">API Architecture</h2>
+                    <span class="status beta">MVC Pattern</span>
+                </div>
+                <div class="section-content">
+                    <div class="arch-visual">
+                        <div class="layer-card controller">
+                            <div class="layer-icon">🎮</div>
+                            <div class="layer-title">Controllers</div>
+                            <div class="layer-description">Handle HTTP requests and responses</div>
+                            <div class="layer-files">
+                                auth.controller.ts<br>
+                                company.controller.ts<br>
+                                hms.controller.ts
+                            </div>
+                        </div>
+                        <div class="layer-card service">
+                            <div class="layer-icon">⚡</div>
+                            <div class="layer-title">Services</div>
+                            <div class="layer-description">Business logic and data processing</div>
+                            <div class="layer-files">
+                                auth.service.ts<br>
+                                registration.service.ts<br>
+                                role.service.ts
+                            </div>
+                        </div>
+                        <div class="layer-card repository">
+                            <div class="layer-icon">🗃️</div>
+                            <div class="layer-title">Repositories</div>
+                            <div class="layer-description">Database operations and queries</div>
+                            <div class="layer-files">
+                                base.repository.ts<br>
+                                user.repository.ts<br>
+                                company.repository.ts
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Request Flow Diagram -->
+                    <div class="flow-container">
+                        <div class="mermaid">
+graph LR
+    A[Client Request] --> B[Middleware]
+    B --> C[Route Handler]
+    C --> D[Controller]
+    D --> E[Validation]
+    E --> F[Service Layer]
+    F --> G[Repository]
+    G --> H[Database]
+    H --> G
+    G --> F
+    F --> D
+    D --> I[Response]
+    I --> A
+
+    style A fill:#8b5cf6,stroke:#7c3aed,color:#fff
+    style B fill:#ef4444,stroke:#dc2626,color:#fff
+    style C fill:#3b82f6,stroke:#2563eb,color:#fff
+    style D fill:#3b82f6,stroke:#2563eb,color:#fff
+    style E fill:#f59e0b,stroke:#d97706,color:#fff
+    style F fill:#10b981,stroke:#059669,color:#fff
+    style G fill:#8b5cf6,stroke:#7c3aed,color:#fff
+    style H fill:#6366f1,stroke:#4f46e5,color:#fff
+    style I fill:#10b981,stroke:#059669,color:#fff
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tech Stack Section -->
+            <section class="visual-section">
+                <div class="section-header">
+                    <span class="section-icon">🛠️</span>
+                    <h2 class="section-title">Technology Stack</h2>
+                    <span class="status new">Latest Versions</span>
+                </div>
+                <div class="section-content">
+                    <div class="tech-grid">
+                        <div class="tech-card">
+                            <div class="tech-logo">⚡</div>
+                            <div class="tech-name">Node.js</div>
+                        </div>
+                        <div class="tech-card">
+                            <div class="tech-logo">🚂</div>
+                            <div class="tech-name">Express.js</div>
+                        </div>
+                        <div class="tech-card">
+                            <div class="tech-logo">📘</div>
+                            <div class="tech-name">TypeScript</div>
+                        </div>
+                        <div class="tech-card">
+                            <div class="tech-logo">🐬</div>
+                            <div class="tech-name">MySQL</div>
+                        </div>
+                        <div class="tech-card">
+                            <div class="tech-logo">🔐</div>
+                            <div class="tech-name">JWT Auth</div>
+                        </div>
+                        <div class="tech-card">
+                            <div class="tech-logo">✅</div>
+                            <div class="tech-name">Zod</div>
+                        </div>
+                        <div class="tech-card">
+                            <div class="tech-logo">🧪</div>
+                            <div class="tech-name">Jest</div>
+                        </div>
+                        <div class="tech-card">
+                            <div class="tech-logo">🔄</div>
+                            <div class="tech-name">Nodemon</div>
+                        </div>
+                        <div class="tech-card">
+                            <div class="tech-logo">🎯</div>
+                            <div class="tech-name">ESLint</div>
+                        </div>
+                        <div class="tech-card">
+                            <div class="tech-logo">💅</div>
+                            <div class="tech-name">Prettier</div>
+                        </div>
+                        <div class="tech-card">
+                            <div class="tech-logo">🐳</div>
+                            <div class="tech-name">Docker</div>
+                        </div>
+                        <div class="tech-card">
+                            <div class="tech-logo">📊</div>
+                            <div class="tech-name">Winston</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Environment Setup -->
+            <section id="setup" class="visual-section">
+                <div class="section-header">
+                    <span class="section-icon">⚙️</span>
+                    <h2 class="section-title">Environment Setup</h2>
+                </div>
+                <div class="section-content">
+                    <h3>Required Software</h3>
+                    <div class="code-example">
+                        <div class="code-header">
+                            <span class="code-language">Prerequisites</span>
+                        </div>
+                        <div class="code-content">
+Node.js v18+ (LTS recommended)
+MySQL 8.0+
+npm or yarn package manager
+Git for version control
+VS Code (recommended IDE)
+                        </div>
+                    </div>
+
+                    <h3>Environment Variables</h3>
+                    <div class="code-example">
+                        <div class="code-header">
+                            <span class="code-language">.env</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <div class="code-content">
+# Server Configuration
+NODE_ENV=development
+PORT=3000
+
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=yourpassword
+DB_NAME=hms_db
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-key
+JWT_EXPIRES_IN=7d
+REFRESH_TOKEN_EXPIRES_IN=30d
+
+# API Configuration
+API_PREFIX=/api
+CORS_ORIGIN=http://localhost:5173
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Database Section -->
+            <section id="database" class="visual-section">
+                <div class="section-header">
+                    <span class="section-icon">🗄️</span>
+                    <h2 class="section-title">Database Schema</h2>
+                </div>
+                <div class="section-content">
+                    <div class="flow-container">
+                        <div class="mermaid">
+erDiagram
+    Users ||--o{ UserOrganizations : has
+    Users ||--o{ RefreshTokens : has
+    Organizations ||--o{ UserOrganizations : contains
+    Organizations ||--o{ Companies : owns
+    Companies ||--o{ Branches : has
+    Companies ||--o{ Employees : employs
+    Branches ||--o{ DoctorBranchMappings : has
+    Employees ||--o{ DoctorBranchMappings : assigned
+    Roles ||--o{ RoleMenuPermissions : has
+    Menus ||--o{ RoleMenuPermissions : included
+    Users {
+        int id PK
+        string email UK
+        string password
+        string firstName
+        string lastName
+        boolean isActive
+        datetime createdAt
+    }
+    Companies {
+        int id PK
+        string name
+        string code UK
+        int organizationId FK
+        boolean isActive
+    }
+    Branches {
+        int id PK
+        string name
+        string code
+        int companyId FK
+        string address
+    }
+                        </div>
+                    </div>
+
+                    <h3>Database Scripts</h3>
+                    <div class="api-grid">
+                        <div class="api-card">
+                            <div class="method-badge method-post">SETUP</div>
+                            <div class="api-path">npm run db:setup</div>
+                            <div class="api-desc">Initialize database with tables and seed data</div>
+                        </div>
+                        <div class="api-card">
+                            <div class="method-badge method-get">EXPORT</div>
+                            <div class="api-path">npm run db:export</div>
+                            <div class="api-desc">Export current database schema</div>
+                        </div>
+                        <div class="api-card">
+                            <div class="method-badge method-put">MIGRATE</div>
+                            <div class="api-path">npm run db:migrate</div>
+                            <div class="api-desc">Run database migrations</div>
+                        </div>
+                        <div class="api-card">
+                            <div class="method-badge method-delete">RESET</div>
+                            <div class="api-path">npm run db:reset</div>
+                            <div class="api-desc">Reset database to clean state</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- API Endpoints Section -->
+            <section id="api" class="visual-section">
+                <div class="section-header">
+                    <span class="section-icon">🔌</span>
+                    <h2 class="section-title">Core API Endpoints</h2>
+                </div>
+                <div class="section-content">
+                    <h3>Authentication Endpoints</h3>
+                    <div class="api-grid">
+                        <div class="api-card">
+                            <div class="method-badge method-post">POST</div>
+                            <div class="api-path">/api/auth/register</div>
+                            <div class="api-desc">Register new user account</div>
+                        </div>
+                        <div class="api-card">
+                            <div class="method-badge method-post">POST</div>
+                            <div class="api-path">/api/auth/login</div>
+                            <div class="api-desc">Login with credentials</div>
+                        </div>
+                        <div class="api-card">
+                            <div class="method-badge method-post">POST</div>
+                            <div class="api-path">/api/auth/refresh-token</div>
+                            <div class="api-desc">Refresh access token</div>
+                        </div>
+                        <div class="api-card">
+                            <div class="method-badge method-get">GET</div>
+                            <div class="api-path">/api/auth/profile</div>
+                            <div class="api-desc">Get user profile</div>
+                        </div>
+                    </div>
+
+                    <h3>Company Management</h3>
+                    <div class="api-grid">
+                        <div class="api-card">
+                            <div class="method-badge method-get">GET</div>
+                            <div class="api-path">/api/company/companies</div>
+                            <div class="api-desc">List all companies</div>
+                        </div>
+                        <div class="api-card">
+                            <div class="method-badge method-post">POST</div>
+                            <div class="api-path">/api/company/companies</div>
+                            <div class="api-desc">Create new company</div>
+                        </div>
+                        <div class="api-card">
+                            <div class="method-badge method-put">PUT</div>
+                            <div class="api-path">/api/company/companies/:id</div>
+                            <div class="api-desc">Update company details</div>
+                        </div>
+                        <div class="api-card">
+                            <div class="method-badge method-delete">DELETE</div>
+                            <div class="api-path">/api/company/companies/:id</div>
+                            <div class="api-desc">Delete company</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Authentication Section -->
+            <section id="auth" class="visual-section">
+                <div class="section-header">
+                    <span class="section-icon">🔐</span>
+                    <h2 class="section-title">Authentication & Security</h2>
+                </div>
+                <div class="section-content">
+                    <h3>JWT Token Flow</h3>
+                    <div class="flow-container">
+                        <div class="mermaid">
+sequenceDiagram
+    participant C as Client
+    participant A as API
+    participant DB as Database
+    
+    C->>A: POST /auth/login
+    A->>DB: Validate credentials
+    DB-->>A: User data
+    A->>A: Generate JWT & Refresh Token
+    A-->>C: { accessToken, refreshToken }
+    
+    Note over C,A: Subsequent requests
+    
+    C->>A: GET /api/resource
+    Note right of C: Authorization: Bearer token
+    A->>A: Verify JWT
+    A->>DB: Fetch resource
+    DB-->>A: Resource data
+    A-->>C: Response data
+    
+    Note over C,A: Token refresh
+    
+    C->>A: POST /auth/refresh-token
+    A->>DB: Validate refresh token
+    A->>A: Generate new JWT
+    A-->>C: { accessToken }
+                        </div>
+                    </div>
+
+                    <h3>Security Best Practices</h3>
+                    <div class="practice-grid">
+                        <div class="practice-card">
+                            <span class="practice-icon">🔒</span>
+                            <div class="practice-title">Password Hashing</div>
+                            <div class="practice-desc">All passwords are hashed using bcrypt with salt rounds of 10</div>
+                        </div>
+                        <div class="practice-card">
+                            <span class="practice-icon">🛡️</span>
+                            <div class="practice-title">Input Validation</div>
+                            <div class="practice-desc">Zod schemas validate all incoming requests</div>
+                        </div>
+                        <div class="practice-card">
+                            <span class="practice-icon">🚦</span>
+                            <div class="practice-title">Rate Limiting</div>
+                            <div class="practice-desc">API endpoints are rate-limited to prevent abuse</div>
+                        </div>
+                        <div class="practice-card">
+                            <span class="practice-icon">🔐</span>
+                            <div class="practice-title">CORS Protection</div>
+                            <div class="practice-desc">Configured CORS policies for secure cross-origin requests</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Code Patterns Section -->
+            <section id="patterns" class="visual-section">
+                <div class="section-header">
+                    <span class="section-icon">🎯</span>
+                    <h2 class="section-title">Code Patterns & Examples</h2>
+                </div>
+                <div class="section-content">
+                    <h3>Controller Pattern</h3>
+                    <div class="code-example">
+                        <div class="code-header">
+                            <span class="code-language">TypeScript</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <div class="code-content">
+export class UserController {
+  async getUsers(req: Request, res: Response) {
+    try {
+      const users = await userService.findAll();
+      
+      return res.success({
+        data: users,
+        message: 'Users retrieved successfully'
+      });
+    } catch (error) {
+      return res.error({
+        message: 'Failed to fetch users',
+        error: error.message
+      });
+    }
+  }
+}
+                        </div>
+                    </div>
+
+                    <h3>Service Pattern</h3>
+                    <div class="code-example">
+                        <div class="code-header">
+                            <span class="code-language">TypeScript</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <div class="code-content">
+export class UserService {
+  constructor(private userRepo: UserRepository) {}
+
+  async findAll(): Promise&lt;User[]&gt; {
+    const users = await this.userRepo.findAll({
+      where: { isActive: true },
+      include: ['organization', 'roles']
+    });
+    
+    return users.map(user => this.mapToDTO(user));
+  }
+  
+  private mapToDTO(user: User): UserDTO {
+    return {
+      id: user.id,
+      email: user.email,
+      name: `${user.firstName} ${user.lastName}`,
+      roles: user.roles.map(r => r.name)
+    };
+  }
+}
+                        </div>
+                    </div>
+
+                    <h3>Validation Schema</h3>
+                    <div class="code-example">
+                        <div class="code-header">
+                            <span class="code-language">TypeScript</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <div class="code-content">
+import { z } from 'zod';
+
+export const createUserSchema = z.object({
+  body: z.object({
+    email: z.string().email('Invalid email format'),
+    password: z.string()
+      .min(8, 'Password must be at least 8 characters')
+      .regex(/[A-Z]/, 'Must contain uppercase letter')
+      .regex(/[0-9]/, 'Must contain number'),
+    firstName: z.string().min(2).max(50),
+    lastName: z.string().min(2).max(50),
+    organizationId: z.number().positive()
+  })
+});
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Testing Section -->
+            <section id="testing" class="visual-section">
+                <div class="section-header">
+                    <span class="section-icon">🧪</span>
+                    <h2 class="section-title">Testing Strategy</h2>
+                </div>
+                <div class="section-content">
+                    <h3>Test Commands</h3>
+                    <div class="api-grid">
+                        <div class="api-card">
+                            <div class="method-badge method-get">TEST</div>
+                            <div class="api-path">npm test</div>
+                            <div class="api-desc">Run all unit tests</div>
+                        </div>
+                        <div class="api-card">
+                            <div class="method-badge method-get">WATCH</div>
+                            <div class="api-path">npm run test:watch</div>
+                            <div class="api-desc">Run tests in watch mode</div>
+                        </div>
+                        <div class="api-card">
+                            <div class="method-badge method-post">E2E</div>
+                            <div class="api-path">npm run test:e2e</div>
+                            <div class="api-desc">Run end-to-end tests</div>
+                        </div>
+                        <div class="api-card">
+                            <div class="method-badge method-put">COVERAGE</div>
+                            <div class="api-path">npm run test:coverage</div>
+                            <div class="api-desc">Generate coverage report</div>
+                        </div>
+                    </div>
+
+                    <h3>Example Test</h3>
+                    <div class="code-example">
+                        <div class="code-header">
+                            <span class="code-language">TypeScript - Jest</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <div class="code-content">
+describe('AuthController', () => {
+  let authController: AuthController;
+  let mockAuthService: jest.Mocked&lt;AuthService&gt;;
+
+  beforeEach(() => {
+    mockAuthService = createMockAuthService();
+    authController = new AuthController(mockAuthService);
+  });
+
+  describe('login', () => {
+    it('should return tokens for valid credentials', async () => {
+      const loginDto = {
+        email: 'test@example.com',
+        password: 'Password123'
+      };
+
+      mockAuthService.login.mockResolvedValue({
+        accessToken: 'jwt-token',
+        refreshToken: 'refresh-token'
+      });
+
+      const result = await authController.login(loginDto);
+
+      expect(result).toHaveProperty('accessToken');
+      expect(mockAuthService.login).toHaveBeenCalledWith(loginDto);
+    });
+  });
+});
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Deployment Section -->
+            <section id="deployment" class="visual-section">
+                <div class="section-header">
+                    <span class="section-icon">🚢</span>
+                    <h2 class="section-title">Deployment Guide</h2>
+                </div>
+                <div class="section-content">
+                    <h3>Docker Deployment</h3>
+                    <div class="code-example">
+                        <div class="code-header">
+                            <span class="code-language">Dockerfile</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <div class="code-content">
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+
+FROM node:18-alpine
+WORKDIR /app
+COPY --from=builder /app/node_modules ./node_modules
+COPY . .
+RUN npm run build
+
+EXPOSE 3000
+CMD ["npm", "start"]
+                        </div>
+                    </div>
+
+                    <h3>Production Checklist</h3>
+                    <div class="practice-grid">
+                        <div class="practice-card">
+                            <span class="practice-icon">✅</span>
+                            <div class="practice-title">Environment Variables</div>
+                            <div class="practice-desc">Set all production environment variables</div>
+                        </div>
+                        <div class="practice-card">
+                            <span class="practice-icon">✅</span>
+                            <div class="practice-title">Database Migration</div>
+                            <div class="practice-desc">Run all migrations on production DB</div>
+                        </div>
+                        <div class="practice-card">
+                            <span class="practice-icon">✅</span>
+                            <div class="practice-title">SSL/TLS Setup</div>
+                            <div class="practice-desc">Configure HTTPS certificates</div>
+                        </div>
+                        <div class="practice-card">
+                            <span class="practice-icon">✅</span>
+                            <div class="practice-title">Monitoring</div>
+                            <div class="practice-desc">Set up logging and monitoring tools</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="fab" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        ↑
+    </div>
+
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#3b82f6',
+                primaryTextColor: '#ffffff',
+                primaryBorderColor: '#2563eb',
+                lineColor: '#6b7280',
+                secondaryColor: '#8b5cf6',
+                tertiaryColor: '#1f2937',
+                background: '#111827',
+                mainBkg: '#1f2937',
+                secondBkg: '#374151',
+                tertiaryBkg: '#111827'
+            }
+        });
+
+        // Smooth scroll navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Update active state
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Scroll to section
+                const targetId = item.getAttribute('href');
+                const target = document.querySelector(targetId);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Copy code functionality
+        document.querySelectorAll('.code-copy').forEach(button => {
+            button.addEventListener('click', () => {
+                const codeContent = button.closest('.code-example').querySelector('.code-content').textContent;
+                navigator.clipboard.writeText(codeContent);
+                
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = 'var(--success)';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 2000);
+            });
+        });
+
+        // Intersection Observer for section highlighting
+        const sections = document.querySelectorAll('section[id]');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    navItems.forEach(item => {
+                        item.classList.remove('active');
+                        if (item.getAttribute('href') === `#${id}`) {
+                            item.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.3 });
+
+        sections.forEach(section => observer.observe(section));
+    </script>
+</body>
+</html>

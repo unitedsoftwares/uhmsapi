@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run test:auth:*)",
+      "Bash(rm:*)",
+      "Bash(del \"E:\\united\\hms_api\\new_dbschema.sql\")",
+      "Bash(mv:*)",
+      "Bash(jest:*)",
+      "Bash(npx jest:*)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run typecheck:*)",
+      "Bash(node:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(ls:*)",
+      "Bash(git fetch:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(git checkout:*)"
+    ],
+    "deny": []
+  }
+}

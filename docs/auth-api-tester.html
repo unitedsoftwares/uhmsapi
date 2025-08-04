@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth API Tester - HMS API</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface-hover: #1a1a1a;
+            --border: #2a2a2a;
+            --text: #ffffff;
+            --text-dim: #a0a0a0;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --purple: #8b5cf6;
+            --pink: #ec4899;
+            --cyan: #06b6d4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background Animation */
+        .bg-gradient {
+            position: fixed;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
+            animation: rotate 30s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-dim);
+        }
+
+        /* Base URL Config */
+        .base-url-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease 0.1s both;
+        }
+
+        .base-url-label {
+            font-size: 0.875rem;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+        }
+
+        .base-url-input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--text);
+            font-size: 1rem;
+            font-family: 'Consolas', monospace;
+        }
+
+        .base-url-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Step Navigation */
+        .steps-nav {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow-x: auto;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--surface-hover);
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .step-item.active .step-number {
+            background: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+
+        .step-item.completed .step-number {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .step-info {
+            text-align: left;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--text-dim);
+            transition: color 0.3s;
+        }
+
+        .step-item.active .step-title {
+            color: var(--text);
+        }
+
+        .step-desc {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        /* Main Content Area */
+        .content-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            animation: fadeInUp 0.8s ease 0.3s both;
+        }
+
+        /* Request Panel */
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .panel:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .panel-header {
+            padding: 1.5rem;
+            background: var(--surface-hover);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-icon {
+            font-size: 1.25rem;
+        }
+
+        .panel-content {
+            padding: 1.5rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-input.error {
+            border-color: var(--error);
+        }
+
+        .input-error {
+            font-size: 0.75rem;
+            color: var(--error);
+            margin-top: 0.25rem;
+        }
+
+        /* Method Badge */
+        .method-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .method-post {
+            background: var(--primary);
+            color: white;
+        }
+
+        .method-get {
+            background: var(--success);
+            color: white;
+        }
+
+        .method-patch {
+            background: var(--warning);
+            color: white;
+        }
+
+        /* Endpoint Display */
+        .endpoint-display {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-family: 'Consolas', monospace;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Action Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--surface-hover);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Response Display */
+        .response-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab {
+            padding: 0.75rem 1rem;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .tab:hover {
+            color: var(--text);
+        }
+
+        .tab.active {
+            color: var(--primary);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .response-content {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Consolas', monospace;
+            font-size: 0.875rem;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .response-content.success {
+            border-color: var(--success);
+        }
+
+        .response-content.error {
+            border-color: var(--error);
+        }
+
+        /* Status Indicator */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--error);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Token Display */
+        .token-display {
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .token-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+        }
+
+        .token-value {
+            font-family: 'Consolas', monospace;
+            font-size: 0.875rem;
+            color: var(--cyan);
+            word-break: break-all;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .copy-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dim);
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .content-area {
+                grid-template-columns: 1fr;
+            }
+            
+            .steps-nav {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">Auth API Tester</h1>
+            <p class="subtitle">Test HMS Authentication Endpoints with Real-time Response</p>
+        </header>
+
+        <!-- Base URL Configuration -->
+        <div class="base-url-section">
+            <div class="base-url-label">API Base URL (auto-configured)</div>
+            <input 
+                type="text" 
+                class="base-url-input" 
+                id="baseUrl" 
+                value="http://localhost:3001/api/v1"
+                placeholder="Enter your API base URL (e.g., http://localhost:3000/api)"
+            />
+        </div>
+
+        <!-- Step Navigation -->
+        <div class="steps-nav">
+            <div class="step-item active" data-step="register">
+                <div class="step-number">1</div>
+                <div class="step-info">
+                    <div class="step-title">Register</div>
+                    <div class="step-desc">Create new account</div>
+                </div>
+            </div>
+            <div class="step-item" data-step="complete">
+                <div class="step-number">2</div>
+                <div class="step-info">
+                    <div class="step-title">Complete Registration</div>
+                    <div class="step-desc">Finish setup</div>
+                </div>
+            </div>
+            <div class="step-item" data-step="login">
+                <div class="step-number">3</div>
+                <div class="step-info">
+                    <div class="step-title">Login</div>
+                    <div class="step-desc">Get access token</div>
+                </div>
+            </div>
+            <div class="step-item" data-step="profile">
+                <div class="step-number">4</div>
+                <div class="step-info">
+                    <div class="step-title">Get Profile</div>
+                    <div class="step-desc">Test auth token</div>
+                </div>
+            </div>
+            <div class="step-item" data-step="refresh">
+                <div class="step-number">5</div>
+                <div class="step-info">
+                    <div class="step-title">Refresh Token</div>
+                    <div class="step-desc">Get new token</div>
+                </div>
+            </div>
+            <div class="step-item" data-step="logout">
+                <div class="step-number">6</div>
+                <div class="step-info">
+                    <div class="step-title">Logout</div>
+                    <div class="step-desc">End session</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="content-area">
+            <!-- Request Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="panel-icon">📤</span>
+                        Request
+                    </div>
+                </div>
+                <div class="panel-content" id="requestContent">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Response Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="panel-icon">📥</span>
+                        Response
+                    </div>
+                    <div id="statusIndicator"></div>
+                </div>
+                <div class="panel-content">
+                    <div class="response-tabs">
+                        <button class="tab active" data-tab="body">Body</button>
+                        <button class="tab" data-tab="headers">Headers</button>
+                        <button class="tab" data-tab="raw">Raw</button>
+                    </div>
+                    <div class="response-content" id="responseContent">
+                        <div style="color: var(--text-dim); text-align: center; padding: 3rem;">
+                            No request sent yet. Fill in the form and click Send Request.
+                        </div>
+                    </div>
+                    <div id="tokenDisplay"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth-api-tester.js"></script>
+</body>
+</html>

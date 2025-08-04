@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carps API Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .nav {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .nav a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav a:hover {
+            color: #3498db;
+        }
+        
+        .section {
+            background-color: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        h3 {
+            color: #34495e;
+            margin: 1.5rem 0 1rem 0;
+        }
+        
+        .endpoint {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        
+        .method {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+        }
+        
+        .method-get { background-color: #28a745; color: white; }
+        .method-post { background-color: #007bff; color: white; }
+        .method-put { background-color: #ffc107; color: black; }
+        .method-patch { background-color: #17a2b8; color: white; }
+        .method-delete { background-color: #dc3545; color: white; }
+        
+        .path {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .auth-required {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
+        
+        .description {
+            margin-top: 0.5rem;
+            color: #666;
+        }
+        
+        code {
+            background-color: #f4f4f4;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        pre {
+            background-color: #f4f4f4;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            border-top: 1px solid #ddd;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Carps API Documentation</h1>
+            <p class="subtitle">Comprehensive API Reference for Hospital Management System</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <nav class="nav">
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#authentication">Authentication</a></li>
+                <li><a href="#auth-endpoints">Auth Endpoints</a></li>
+                <li><a href="#company-endpoints">Company Endpoints</a></li>
+                <li><a href="#hms-endpoints">HMS Endpoints</a></li>
+                <li><a href="#error-handling">Error Handling</a></li>
+            </ul>
+        </nav>
+
+        <section id="overview" class="section">
+            <h2>Overview</h2>
+            <p>The Carps API is a RESTful web service that provides comprehensive functionality for hospital management systems. It includes features for user authentication, company management, branch operations, employee management, role-based access control, and billing services.</p>
+            
+            <h3>Base URL</h3>
+            <code>http://localhost:3000/api</code>
+            
+            <h3>Request Format</h3>
+            <p>All requests must include the following headers:</p>
+            <pre>Content-Type: application/json
+Accept: application/json</pre>
+            
+            <h3>Response Format</h3>
+            <p>All responses are returned in JSON format with the following structure:</p>
+            <pre>{
+  "success": true|false,
+  "data": {...} | [...],
+  "message": "Response message",
+  "error": "Error details (if applicable)"
+}</pre>
+        </section>
+
+        <section id="authentication" class="section">
+            <h2>Authentication</h2>
+            <p>The API uses JWT (JSON Web Token) for authentication. Most endpoints require authentication except for the public auth endpoints.</p>
+            
+            <h3>Token Usage</h3>
+            <p>Include the JWT token in the Authorization header:</p>
+            <pre>Authorization: Bearer &lt;your-jwt-token&gt;</pre>
+            
+            <h3>Token Refresh</h3>
+            <p>Access tokens expire after a certain period. Use the refresh token endpoint to obtain a new access token without re-authenticating.</p>
+        </section>
+
+        <section id="auth-endpoints" class="section">
+            <h2>Authentication Endpoints</h2>
+            
+            <h3>Public Endpoints</h3>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/auth/register</span>
+                <p class="description">Register a new user account</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/auth/register-complete</span>
+                <p class="description">Complete the registration process</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/auth/login</span>
+                <p class="description">Login with email and password</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/auth/refresh-token</span>
+                <p class="description">Refresh access token using refresh token</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/auth/logout</span>
+                <p class="description">Logout and invalidate tokens</p>
+            </div>
+            
+            <h3>Protected Endpoints</h3>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/auth/profile</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get current user profile</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-patch">PATCH</span>
+                <span class="path">/auth/profile</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Update user profile</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/auth/change-password</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Change user password</p>
+            </div>
+        </section>
+
+        <section id="company-endpoints" class="section">
+            <h2>Company Management Endpoints</h2>
+            <p>All company endpoints require authentication.</p>
+            
+            <h3>Company Operations</h3>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/company/companies</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Create a new company</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/company/companies</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get list of companies</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/company/companies/:id</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get company by ID</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-put">PUT</span>
+                <span class="path">/company/companies/:id</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Update company details</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-delete">DELETE</span>
+                <span class="path">/company/companies/:id</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Delete a company</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/company/companies/:id/stats</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get company statistics</p>
+            </div>
+            
+            <h3>Branch Management</h3>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/company/branches</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Create a new branch</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/company/companies/:companyId/branches</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get branches by company</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/company/branches/:id</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get branch by ID</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-put">PUT</span>
+                <span class="path">/company/branches/:id</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Update branch details</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-delete">DELETE</span>
+                <span class="path">/company/branches/:id</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Delete a branch</p>
+            </div>
+            
+            <h3>Employee Management</h3>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/company/employees</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Create a new employee</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/company/companies/:companyId/employees</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get employees by company</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/company/branches/:branchId/doctors</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get doctors by branch</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/company/employees/:id</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get employee by ID</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-put">PUT</span>
+                <span class="path">/company/employees/:id</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Update employee details</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-delete">DELETE</span>
+                <span class="path">/company/employees/:id</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Delete an employee</p>
+            </div>
+            
+            <h3>Company Settings</h3>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/company/companies/:companyId/settings</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get company settings</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-put">PUT</span>
+                <span class="path">/company/companies/:companyId/settings</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Update company settings</p>
+            </div>
+        </section>
+
+        <section id="hms-endpoints" class="section">
+            <h2>HMS (Hospital Management System) Endpoints</h2>
+            <p>All HMS endpoints require authentication.</p>
+            
+            <h3>Role Management</h3>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/hms/roles</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Create a new role</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/hms/roles</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get all roles</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/hms/roles/:id</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get role by ID</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/hms/roles/:id/permissions</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get role permissions</p>
+            </div>
+            
+            <h3>Menu Management</h3>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/hms/menus</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Create a new menu item</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/hms/menus/hierarchy</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get menu hierarchy</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/hms/roles/:roleId/menus/:menuId</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Assign menu to role</p>
+            </div>
+            
+            <h3>Doctor-Branch Mapping</h3>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/hms/doctor-branch-mappings</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Create doctor-branch mapping</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/hms/employees/:employeeId/branch-mappings</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get doctor's branch mappings</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/hms/branches/:branchId/doctor-mappings</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get branch's doctor mappings</p>
+            </div>
+            
+            <h3>Employee File Management</h3>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/hms/employees/:employeeId/files</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Upload employee file</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/hms/employees/:employeeId/files</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get employee files</p>
+            </div>
+            
+            <h3>Referral Doctor Management</h3>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/hms/referral-doctors</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Create referral doctor</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/hms/referral-doctors</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get all referral doctors</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/hms/referral-doctors/search</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Search referral doctors</p>
+            </div>
+            
+            <h3>Billing Management</h3>
+            
+            <h4>Plan Management</h4>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/hms/plans</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Create a new plan</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/hms/plans</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get all plans</p>
+            </div>
+            
+            <h4>Subscription Management</h4>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/hms/subscriptions</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Create subscription</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/hms/companies/:companyId/subscriptions</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get company subscriptions</p>
+            </div>
+            
+            <h4>Invoice Management</h4>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/hms/invoices</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Create invoice</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/hms/companies/:companyId/invoices</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get company invoices</p>
+            </div>
+            
+            <h4>Payment Management</h4>
+            
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/hms/payments</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Create payment</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/hms/invoices/:invoiceId/payments</span>
+                <span class="auth-required">Auth Required</span>
+                <p class="description">Get invoice payments</p>
+            </div>
+        </section>
+
+        <section id="error-handling" class="section">
+            <h2>Error Handling</h2>
+            <p>The API uses standard HTTP status codes to indicate the success or failure of requests.</p>
+            
+            <h3>Common Status Codes</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Status Code</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>200 OK</code></td>
+                        <td>Request successful</td>
+                    </tr>
+                    <tr>
+                        <td><code>201 Created</code></td>
+                        <td>Resource created successfully</td>
+                    </tr>
+                    <tr>
+                        <td><code>400 Bad Request</code></td>
+                        <td>Invalid request parameters</td>
+                    </tr>
+                    <tr>
+                        <td><code>401 Unauthorized</code></td>
+                        <td>Authentication required or failed</td>
+                    </tr>
+                    <tr>
+                        <td><code>403 Forbidden</code></td>
+                        <td>Access denied to resource</td>
+                    </tr>
+                    <tr>
+                        <td><code>404 Not Found</code></td>
+                        <td>Resource not found</td>
+                    </tr>
+                    <tr>
+                        <td><code>422 Unprocessable Entity</code></td>
+                        <td>Validation errors</td>
+                    </tr>
+                    <tr>
+                        <td><code>500 Internal Server Error</code></td>
+                        <td>Server error occurred</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Error Response Format</h3>
+            <pre>{
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable error message",
+    "details": {
+      // Additional error details if applicable
+    }
+  }
+}</pre>
+            
+            <h3>Validation Errors</h3>
+            <p>When validation fails (422 status), the response includes detailed field-level errors:</p>
+            <pre>{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Validation failed",
+    "details": {
+      "email": "Email is required",
+      "password": "Password must be at least 8 characters"
+    }
+  }
+}</pre>
+        </section>
+
+        <footer class="footer">
+            <p>&copy; 2024 Carps API. All rights reserved.</p>
+            <p>Version 1.0.0 | Last updated: January 2025</p>
+        </footer>
+    </div>
+</body>
+</html>
