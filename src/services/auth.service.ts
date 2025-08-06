@@ -135,8 +135,18 @@ export class AuthService {
         email: data.email,
         roleId: roleId,
         companyId: companyId,
+        user_id: userId,
         user_uuid: userDetails.uuid,
         employee_id: userDetails.employee_id,
+        employee_uuid: userDetails.employee?.uuid,
+        role_id: roleId,
+        role_name: userDetails.role?.role_name,
+        company_id: companyId,
+        company_name: userDetails.employee?.company_name,
+        branch_id: userDetails.employee?.branch_id,
+        branch_name: userDetails.employee?.branch_name,
+        employee_name: `${userDetails.employee?.first_name || ''} ${userDetails.employee?.last_name || ''}`.trim(),
+        is_doctor: userDetails.employee?.is_doctor || false,
       };
 
       const accessToken = generateToken(tokenPayload, 'access');
@@ -223,8 +233,18 @@ export class AuthService {
       email: user.email,
       roleId: user.role_id!,
       companyId: userWithDetails.employee.company_id,
+      user_id: user.user_id,
       user_uuid: userWithDetails.uuid,
       employee_id: userWithDetails.employee_id,
+      employee_uuid: userWithDetails.employee.uuid,
+      role_id: user.role_id!,
+      role_name: userWithDetails.role?.role_name,
+      company_id: userWithDetails.employee.company_id,
+      company_name: userWithDetails.employee.company_name,
+      branch_id: userWithDetails.employee.branch_id,
+      branch_name: userWithDetails.employee.branch_name,
+      employee_name: `${userWithDetails.employee.first_name} ${userWithDetails.employee.last_name || ''}`.trim(),
+      is_doctor: userWithDetails.employee.is_doctor || false,
     };
 
     const accessToken = generateToken(tokenPayload, 'access');

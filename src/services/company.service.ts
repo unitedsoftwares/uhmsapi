@@ -72,7 +72,7 @@ export class CompanyService {
   async getCompanies(
     filters: Partial<Company> = {},
     pagination?: PaginationQuery
-  ): Promise<PaginatedResponse<Company>> {
+  ): Promise<PaginatedResponse<Company>> {0
     return await this.companyRepository.findAll(filters, pagination);
   }
 

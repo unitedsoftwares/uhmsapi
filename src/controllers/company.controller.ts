@@ -2,6 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import { CompanyService } from '../services/company.service';
 import { CreateCompanyDTO, CreateEmployeeDTO } from '../models/user.model';
 import { PaginationQuery } from '../models/base.model';
+import { getAuthContext, validateCompanyAccess } from '../utils/auth.utils';
+import { cleanObject, cleanPhoneNumber } from '../utils/data.utils';
+import { ForbiddenError } from '../errors/AppError';
 import logger from '../utils/logger';
 
 export class CompanyController {
@@ -99,8 +102,30 @@ export class CompanyController {
   ): Promise<void> => {
     try {
       const companyId = parseInt(req.params.id);
-      const updateData = req.body;
-      const updatedBy = req.user?.user_uuid || 'SYSTEM';
+      let updateData = req.body;
+      
+      // Get auth context from JWT token
+      const authContext = getAuthContext(req);
+      
+      // Validate user has access to update this company
+      // (Optional: You can enforce that users can only update their own company)
+      if (!validateCompanyAccess(authContext, companyId)) {
+        throw new ForbiddenError('You do not have permission to update this company');
+      }
+      
+      // Clean the data before sending to service
+      updateData = cleanObject(updateData);
+      
+      // Clean phone numbers if present
+      if (updateData.company_phone) {
+        updateData.company_phone = cleanPhoneNumber(updateData.company_phone);
+      }
+      if (updateData.contact_person_phone) {
+        updateData.contact_person_phone = cleanPhoneNumber(updateData.contact_person_phone);
+      }
+      
+      // Use user UUID from JWT token for audit trail
+      const updatedBy = authContext.userUuid;
 
       const updated = await this.companyService.updateCompany(companyId, updateData, updatedBy);
 
@@ -118,8 +143,10 @@ export class CompanyController {
       res.json({
         success: true,
         message: 'Company updated successfully',
+        data: { company_id: companyId },
       });
     } catch (error) {
+      logger.error('Error updating company:', error);
       next(error);
     }
   };
@@ -311,12 +338,25 @@ export class CompanyController {
     next: NextFunction
   ): Promise<void> => {
     try {
+      // Get auth context from JWT token
+      const authContext = getAuthContext(req);
+      
       const employeeData: CreateEmployeeDTO = {
         ...req.body,
+        // Automatically set company_id from JWT token if not provided
+        company_id: req.body.company_id || authContext.companyId,
+        // Automatically set branch_id from JWT token if not provided
+        branch_id: req.body.branch_id || authContext.branchId,
         date_of_joining: new Date(req.body.date_of_joining || new Date()),
         is_doctor: Boolean(req.body.is_doctor),
       };
-      const createdBy = req.user?.user_uuid || 'SYSTEM';
+      
+      // Validate user has access to create employee in this company
+      if (employeeData.company_id !== authContext.companyId) {
+        throw new ForbiddenError('You can only create employees in your own company');
+      }
+      
+      const createdBy = authContext.userUuid;
 
       const employee = await this.companyService.createEmployee(employeeData, createdBy);
 

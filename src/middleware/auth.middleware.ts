@@ -2,17 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import { verifyToken, extractTokenFromHeader } from '../utils/jwt.utils';
 import { TokenPayload } from '../models/user.model';
 
-// Extend Express Request interface
-declare global {
-  namespace Express {
-    interface Request {
-      user?: TokenPayload;
-      companyId?: number;
-      branchId?: number;
-    }
-  }
-}
-
 export const authenticate = (
   req: Request,
   res: Response,

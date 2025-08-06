@@ -6,6 +6,8 @@ declare global {
       id?: string;
       user?: TokenPayload;
       organizationId?: string;
+      companyId?: number;
+      branchId?: number;
     }
   }
 }

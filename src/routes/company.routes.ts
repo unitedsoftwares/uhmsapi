@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { CompanyController } from '../controllers/company.controller';
 import { authenticate, requireRole } from '../middleware/auth.middleware';
+import { validate } from '../middleware/validation.middleware';
+import { createCompanySchema, updateCompanySchema } from '../validators';
 
 const router = Router();
 const companyController = new CompanyController();
@@ -9,10 +11,10 @@ const companyController = new CompanyController();
 router.use(authenticate);
 
 // Company Management Routes
-router.post('/companies', companyController.createCompany);
+router.post('/companies', validate(createCompanySchema), companyController.createCompany);
 router.get('/companies', companyController.getCompanies);
 router.get('/companies/:id', companyController.getCompanyById);
-router.put('/companies/:id', companyController.updateCompany);
+router.put('/companies/:id', validate(updateCompanySchema), companyController.updateCompany);
 router.delete('/companies/:id', companyController.deleteCompany);
 router.get('/companies/:id/stats', companyController.getCompanyStats);
 
