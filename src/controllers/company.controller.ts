@@ -103,7 +103,7 @@ export class CompanyController {
     try {
       const companyId = parseInt(req.params.id);
       let updateData = req.body;
-      
+     
       // Get auth context from JWT token
       const authContext = getAuthContext(req);
       
@@ -114,7 +114,7 @@ export class CompanyController {
       }
       
       // Clean the data before sending to service
-      updateData = cleanObject(updateData);
+      // updateData = cleanObject(updateData);
       
       // Clean phone numbers if present
       if (updateData.company_phone) {

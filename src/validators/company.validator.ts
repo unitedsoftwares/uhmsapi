@@ -20,7 +20,7 @@ export const createCompanySchema = Joi.object({
    contact_person_name: Joi.string().max(255).optional(),
    contact_person_email: Joi.string().email().max(255).optional(),
    contact_person_phone: Joi.string().max(25).optional(),
-   taxpayer_type: Joi.number().valid(0, 1, 2, 3).optional(),
+   taxpayer_type: Joi.string().optional(),
    logo: Joi.string().max(255).optional(),
 });
 
@@ -44,7 +44,8 @@ export const updateCompanySchema = Joi.object({
    contact_person_name: Joi.string().max(255).optional().allow("", null),
    contact_person_email: Joi.string().email().max(255).optional().allow("", null),
    contact_person_phone: Joi.string().max(25).optional().allow("", null),
-   taxpayer_type: Joi.number().valid(0, 1, 2, 3).optional().allow(null),
+   taxpayer_type: Joi.string().optional().allow(null),
    logo: Joi.string().max(255).optional().allow("", null),
    is_active: Joi.boolean().optional().allow(null),
 }).min(1); // At least one field must be provided for update
+``
