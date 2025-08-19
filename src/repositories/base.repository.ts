@@ -91,8 +91,9 @@ export abstract class BaseRepository<T extends BaseEntity> {
     const [rows] = await conn.execute<RowDataPacket[]>(
       `SELECT * FROM ${this.tableName} ${whereClause} 
        ORDER BY ${sortBy} ${sortOrder} 
-       LIMIT ? OFFSET ?`,
-      [...whereValues, limit, offset]
+       LIMIT ${limit} OFFSET ${offset}`,
+      [...whereValues]
+      
     );
 
     const totalPages = Math.ceil(total / limit);

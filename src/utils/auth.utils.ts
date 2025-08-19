@@ -24,17 +24,23 @@ export const getAuthContext = (req: Request): AuthContext => {
 
   const user = req.user;
 
-  // Ensure required fields are present
-  if (!user.user_id || !user.company_id || !user.employee_id) {
-    throw new UnauthorizedError('Invalid authentication token');
+  // Check for required fields with detailed error messages
+  const missingFields: string[] = [];
+  
+  if (!user.user_id) missingFields.push('user_id');
+  if (!user.company_id) missingFields.push('company_id');
+  if (!user.employee_id) missingFields.push('employee_id');
+
+  if (missingFields.length > 0) {
+    throw new UnauthorizedError(`Invalid authentication token - missing fields: ${missingFields.join(', ')}`);
   }
 
   return {
-    userId: user.user_id,
+    userId: user.user_id!,
     userUuid: user.user_uuid || '',
-    employeeId: user.employee_id,
+    employeeId: user.employee_id!,
     employeeUuid: user.employee_uuid,
-    companyId: user.company_id,
+    companyId: user.company_id!,
     branchId: user.branch_id,
     roleId: user.role_id || 0,
     roleName: user.role_name,

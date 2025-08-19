@@ -299,8 +299,18 @@ export class AuthService {
         email: userWithDetails.email,
         roleId: userWithDetails.role_id!,
         companyId: userWithDetails.employee.company_id,
+        user_id: userWithDetails.user_id,
         user_uuid: userWithDetails.uuid,
         employee_id: userWithDetails.employee_id,
+        employee_uuid: userWithDetails.employee.uuid,
+        role_id: userWithDetails.role_id!,
+        role_name: userWithDetails.role?.role_name,
+        company_id: userWithDetails.employee.company_id,
+        company_name: userWithDetails.employee.company_name,
+        branch_id: userWithDetails.employee.branch_id,
+        branch_name: userWithDetails.employee.branch_name,
+        employee_name: `${userWithDetails.employee.first_name} ${userWithDetails.employee.last_name || ''}`.trim(),
+        is_doctor: userWithDetails.employee.is_doctor || false,
       };
 
       const accessToken = generateToken(tokenPayload, 'access');
