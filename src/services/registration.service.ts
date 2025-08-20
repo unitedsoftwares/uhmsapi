@@ -78,10 +78,12 @@ export class RegistrationService {
   }
 
   async registerComplete(data: EnhancedRegisterDTO): Promise<RegistrationResponse> {
-    // Validate email uniqueness
+    // Validate email uniqueness with specific field information
     const existingEmail = await this.checkEmailExists(data.email);
     if (existingEmail) {
-      throw new ConflictError('Email already registered');
+      const error = new ConflictError('Email address is already registered');
+      (error as any).field = 'email';
+      throw error;
     }
 
     // Get database connection for transaction

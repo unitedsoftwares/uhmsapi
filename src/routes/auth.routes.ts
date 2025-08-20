@@ -70,4 +70,13 @@ router.post(
   authController.changePassword
 );
 
+// Protected route for creating users under company (multi-tenant)
+router.post(
+  '/register-user',
+  authenticate,
+  registrationRateLimiter,
+  validate(authValidators.register),
+  authController.registerUser
+);
+
 export default router;

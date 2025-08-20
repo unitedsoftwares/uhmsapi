@@ -475,6 +475,152 @@ export class UserRepository extends BaseRepository<User> {
     };
   }
 
+  async findAllUsersWithDetails(companyId: number, connection?: PoolConnection): Promise<any[]> {
+    const conn = connection || this.pool;
+    const [rows] = await conn.execute<RowDataPacket[]>(
+      `SELECT
+        u.user_id, u.uuid, u.username, u.employee_id, u.role_id, u.email,
+        u.password_hash, u.expiry_minutes, u.status, u.created_by, u.created_at, u.updated_by, u.updated_at,
+        e.employee_id as emp_id, e.uuid as employee_uuid, e.company_id, e.branch_id,
+        e.employee_name, e.first_name, e.last_name, e.phone, e.designation,
+        e.department, e.date_of_joining, e.is_doctor, e.is_active as emp_active,
+        r.role_id as r_id, r.role_name, r.role_description, r.is_active as role_active,
+        c.company_id as comp_id, c.company_name, c.is_active as comp_active,
+        b.branch_id as br_id, b.branch_name, b.is_active as branch_active
+      FROM users u
+      INNER JOIN employees e ON u.employee_id = e.employee_id
+      INNER JOIN roles r ON u.role_id = r.role_id
+      INNER JOIN companies c ON e.company_id = c.company_id
+      LEFT JOIN branches b ON e.branch_id = b.branch_id
+      WHERE e.company_id = ? AND u.status = ? AND e.is_active = 1
+      ORDER BY e.employee_name`,
+      [companyId, 'active']
+    );
+    
+    return rows.map(row => ({
+      user_id: row.user_id,
+      uuid: row.uuid,
+      username: row.username,
+      employee_id: row.employee_id,
+      role_id: row.role_id,
+      email: row.email,
+      password_hash: row.password_hash,
+      expiry_minutes: row.expiry_minutes,
+      status: row.status,
+      created_by: row.created_by,
+      created_at: row.created_at,
+      updated_by: row.updated_by,
+      updated_at: row.updated_at,
+      employee: {
+        employee_id: row.emp_id,
+        uuid: row.employee_uuid,
+        company_id: row.company_id,
+        branch_id: row.branch_id,
+        employee_name: row.employee_name,
+        first_name: row.first_name,
+        last_name: row.last_name,
+        email: row.email,
+        phone: row.phone,
+        designation: row.designation,
+        department: row.department,
+        date_of_joining: row.date_of_joining,
+        is_doctor: row.is_doctor,
+        is_active: row.emp_active,
+        created_by: row.created_by,
+        created_at: row.created_at,
+        updated_by: row.updated_by,
+        updated_at: row.updated_at
+      },
+      role: {
+        role_id: row.r_id,
+        uuid: row.uuid,
+        role_name: row.role_name,
+        role_description: row.role_description,
+        is_active: row.role_active,
+        created_by: row.created_by,
+        created_at: row.created_at,
+        updated_by: row.updated_by,
+        updated_at: row.updated_at
+      },
+      company: {
+        company_id: row.comp_id,
+        uuid: row.uuid,
+        company_name: row.company_name,
+        is_active: row.comp_active,
+        created_by: row.created_by,
+        created_at: row.created_at,
+        updated_by: row.updated_by,
+        updated_at: row.updated_at
+      },
+      ...(row.br_id && {
+        branch: {
+          branch_id: row.br_id,
+          uuid: row.uuid,
+          company_id: row.company_id,
+          branch_name: row.branch_name,
+          is_active: row.branch_active,
+          created_by: row.created_by,
+          created_at: row.created_at,
+          updated_by: row.updated_by,
+          updated_at: row.updated_at
+        }
+      })
+    }));
+  }
+
+  async updateEmail(userId: number, email: string, connection?: PoolConnection): Promise<boolean> {
+    const conn = connection || this.pool;
+    const [result] = await conn.execute<ResultSetHeader>(
+      'UPDATE users SET email = ?, updated_at = NOW() WHERE user_id = ?',
+      [email, userId]
+    );
+    return result.affectedRows > 0;
+  }
+
+  async updateUsername(userId: number, username: string, connection?: PoolConnection): Promise<boolean> {
+    const conn = connection || this.pool;
+    const [result] = await conn.execute<ResultSetHeader>(
+      'UPDATE users SET username = ?, updated_at = NOW() WHERE user_id = ?',
+      [username, userId]
+    );
+    return result.affectedRows > 0;
+  }
+
+  async updateStatus(userId: number, status: 'active' | 'inactive' | 'suspended', connection?: PoolConnection): Promise<boolean> {
+    const conn = connection || this.pool;
+    const [result] = await conn.execute<ResultSetHeader>(
+      'UPDATE users SET status = ?, updated_at = NOW() WHERE user_id = ?',
+      [status, userId]
+    );
+    return result.affectedRows > 0;
+  }
+
+  async getUserStatistics(companyId: number, connection?: PoolConnection): Promise<any> {
+    const conn = connection || this.pool;
+    const [rows] = await conn.execute<RowDataPacket[]>(
+      `SELECT
+        COUNT(*) as total_users,
+        SUM(CASE WHEN u.status = 'active' THEN 1 ELSE 0 END) as active_users,
+        SUM(CASE WHEN u.status = 'inactive' THEN 1 ELSE 0 END) as inactive_users,
+        SUM(CASE WHEN u.status = 'suspended' THEN 1 ELSE 0 END) as suspended_users,
+        SUM(CASE WHEN e.is_doctor = 1 THEN 1 ELSE 0 END) as doctors,
+        SUM(CASE WHEN e.is_doctor = 0 THEN 1 ELSE 0 END) as staff
+      FROM users u
+      INNER JOIN employees e ON u.employee_id = e.employee_id
+      WHERE e.company_id = ? AND e.is_active = 1`,
+      [companyId]
+    );
+    
+    return rows.length > 0 ? rows[0] : {
+      total_users: 0,
+      active_users: 0,
+      inactive_users: 0,
+      suspended_users: 0,
+      doctors: 0,
+      staff: 0
+    };
+  }
+
   getPool() {
     return this.pool;
   }

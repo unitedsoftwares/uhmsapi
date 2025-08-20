@@ -1,8 +1,9 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/user.controller';
 import { authenticate } from '../middleware/auth.middleware';
-import { validate } from '../middleware/validation.middleware';
+import { validate, validateQuery, validateParams } from '../middleware/validation.middleware';
 import { authValidators } from '../validators/auth.validator';
+import { userValidators } from '../validators/user.validator';
 
 const router = Router();
 const userController = new UserController();
@@ -11,13 +12,20 @@ const userController = new UserController();
 router.use(authenticate);
 
 // Get all users
-router.get('/', userController.getAllUsers);
+router.get(
+  '/',
+  userController.getAllUsers
+);
 
 // Get user statistics
 router.get('/stats', userController.getUserStats);
 
 // Get user by ID
-router.get('/:id', userController.getUserById);
+router.get(
+  '/:id',
+  validateParams(userValidators.userIdParam),
+  userController.getUserById
+);
 
 // Create new user (admin function)
 router.post(
@@ -27,12 +35,26 @@ router.post(
 );
 
 // Update user
-router.patch('/:id', userController.updateUser);
+router.patch(
+  '/:id',
+  validateParams(userValidators.userIdParam),
+  validate(userValidators.updateUser),
+  userController.updateUser
+);
 
 // Update user status
-router.patch('/:id/status', userController.updateUserStatus);
+router.patch(
+  '/:id/status',
+  validateParams(userValidators.userIdParam),
+  validate(userValidators.updateUserStatus),
+  userController.updateUserStatus
+);
 
 // Delete user (soft delete)
-router.delete('/:id', userController.deleteUser);
+router.delete(
+  '/:id',
+  validateParams(userValidators.userIdParam),
+  userController.deleteUser
+);
 
 export default router;

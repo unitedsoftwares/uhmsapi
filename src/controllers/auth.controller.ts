@@ -226,4 +226,50 @@ export class AuthController {
       next(error);
     }
   };
+
+  registerUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const registerData: RegisterDTO = req.body;
+      
+      // Get company_id from authenticated user for multi-tenant isolation
+      const companyId = req.user?.company_id;
+      
+      if (!companyId) {
+        res.status(400).json({
+          success: false,
+          error: {
+            message: 'Company information not found in user context',
+            code: 'COMPANY_NOT_FOUND',
+          },
+        });
+        return;
+      }
+
+      // Add the admin's company_id to the user data to ensure they're added to the same company
+      const userDataWithCompany = {
+        ...registerData,
+        company_id: companyId
+      };
+
+      // Use the existing auth service register method with company_id
+      const result = await this.authService.register(userDataWithCompany);
+
+      res.status(201).json({
+        success: true,
+        message: 'User registered successfully under your company',
+        data: {
+          user: result.user,
+          token: result.access_token,
+          refreshToken: result.refresh_token,
+          expires_at: result.expires_at,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
