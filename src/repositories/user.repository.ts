@@ -397,8 +397,8 @@ export class UserRepository extends BaseRepository<User> {
       INNER JOIN roles r ON u.role_id = r.role_id
       INNER JOIN companies c ON e.company_id = c.company_id
       LEFT JOIN branches b ON e.branch_id = b.branch_id
-      WHERE u.user_id = ? AND u.status = ? AND e.is_active = 1`,
-      [userId, 'active']
+      WHERE u.user_id = ? AND e.is_active = 1`,
+      [userId]
     );
     
     if (rows.length === 0) return null;
@@ -492,9 +492,9 @@ export class UserRepository extends BaseRepository<User> {
       INNER JOIN roles r ON u.role_id = r.role_id
       INNER JOIN companies c ON e.company_id = c.company_id
       LEFT JOIN branches b ON e.branch_id = b.branch_id
-      WHERE e.company_id = ? AND u.status = ? AND e.is_active = 1
+      WHERE e.company_id = ? AND e.is_active = 1
       ORDER BY e.employee_name`,
-      [companyId, 'active']
+      [companyId]
     );
     
     return rows.map(row => ({
