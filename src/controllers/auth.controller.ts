@@ -233,11 +233,9 @@ export class AuthController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const registerData: RegisterDTO = req.body;
-      
+      const registerData: RegisterDTO = req.body;    
       // Get company_id from authenticated user for multi-tenant isolation
       const companyId = req.user?.company_id;
-      
       if (!companyId) {
         res.status(400).json({
           success: false,

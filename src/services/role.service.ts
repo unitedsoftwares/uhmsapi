@@ -36,7 +36,10 @@ export class RoleService {
   }
 
   // Role Management
-  async createRole(data: Partial<Role>, createdBy: string): Promise<Role> {
+  async createRole(
+    data: Partial<Role> & { menuPermissions?: Array<{ menu_id: number; can_view?: boolean; can_create?: boolean; can_edit?: boolean; can_delete?: boolean }> },
+    createdBy: string
+  ): Promise<Role> {
     if (!data.role_name) {
       throw new ValidationError('Role name is required');
     }
@@ -47,11 +50,31 @@ export class RoleService {
       throw new ConflictError('Role with this name already exists');
     }
 
-    const role = await this.roleRepository.create(data, createdBy);
+    const { menuPermissions, ...roleData } = data;
 
-    logger.info('Role created successfully', { 
-      roleId: role.role_id, 
-      roleName: role.role_name 
+    const role = await this.roleRepository.create(roleData, createdBy);
+
+    // If menu permissions are provided, assign them to the role
+    if (menuPermissions && menuPermissions.length > 0) {
+      for (const permission of menuPermissions) {
+        await this.assignMenuToRole(
+          role.role_id,
+          permission.menu_id,
+          {
+            can_view: permission.can_view || false,
+            can_create: permission.can_create || false,
+            can_edit: permission.can_edit || false,
+            can_delete: permission.can_delete || false,
+          },
+          createdBy
+        );
+      }
+    }
+
+    logger.info('Role created successfully', {
+      roleId: role.role_id,
+      roleName: role.role_name,
+      menuPermissionsCount: menuPermissions?.length || 0
     });
 
     return role;
@@ -371,6 +394,95 @@ export class RoleService {
 
   async getRoleMenus(roleId: number): Promise<RoleMenu[]> {
     return await this.roleMenuRepository.findByRoleId(roleId);
+  }
+
+  async getRoleMenusWithDetails(roleId: number): Promise<any[]> {
+    // Verify role exists
+    const role = await this.roleRepository.findByPrimaryKey(roleId);
+    if (!role) {
+      throw new NotFoundError('Role not found');
+    }
+
+    // Get role menus with menu details
+    const roleMenus = await this.roleMenuRepository.findByRoleId(roleId);
+    
+    // Get menu details for each role menu and combine the data
+    const menusWithDetails = await Promise.all(
+      roleMenus.map(async (roleMenu) => {
+        const menu = await this.menuRepository.findByPrimaryKey(roleMenu.menu_id);
+        return {
+          role_menu_id: roleMenu.role_menu_id,
+          uuid: roleMenu.uuid,
+          role_id: roleMenu.role_id,
+          menu_id: roleMenu.menu_id,
+          can_view: roleMenu.can_view,
+          can_create: roleMenu.can_create,
+          can_edit: roleMenu.can_edit,
+          can_delete: roleMenu.can_delete,
+          created_by: roleMenu.created_by,
+          created_at: roleMenu.created_at,
+          updated_by: roleMenu.updated_by,
+          updated_at: roleMenu.updated_at,
+          menu_name: menu?.menu_name || '',
+          menu_description: menu?.menu_description || null,
+          parent_menu_id: menu?.parent_menu_id || null,
+          menu_order: menu?.menu_order || 0,
+          menu_path: menu?.route || '',
+          menu_icon: '', // Not available in Menu model
+          menu_component: menu?.component || null,
+          menu_route: menu?.route || null,
+          is_active: menu?.is_active || 0,
+        };
+      })
+    );
+
+    return menusWithDetails;
+  }
+
+  async updateRoleMenuPermissions(
+    roleId: number,
+    menuId: number,
+    permissions: { can_view?: boolean; can_create?: boolean; can_edit?: boolean; can_delete?: boolean },
+    updatedBy: string
+  ): Promise<boolean> {
+    // Verify role and menu exist
+    const role = await this.roleRepository.findByPrimaryKey(roleId);
+    if (!role) {
+      throw new NotFoundError('Role not found');
+    }
+
+    const menu = await this.menuRepository.findByPrimaryKey(menuId);
+    if (!menu) {
+      throw new NotFoundError('Menu not found');
+    }
+
+    // Find existing role menu permission
+    const roleMenus = await this.roleMenuRepository.findByRoleId(roleId);
+    const existingRoleMenu = roleMenus.find(rm => rm.menu_id === menuId);
+    
+    if (!existingRoleMenu) {
+      throw new NotFoundError('Role menu permission not found');
+    }
+
+    // Update the permissions
+    const updateData = {
+      can_view: permissions.can_view !== undefined ? permissions.can_view : existingRoleMenu.can_view,
+      can_create: permissions.can_create !== undefined ? permissions.can_create : existingRoleMenu.can_create,
+      can_edit: permissions.can_edit !== undefined ? permissions.can_edit : existingRoleMenu.can_edit,
+      can_delete: permissions.can_delete !== undefined ? permissions.can_delete : existingRoleMenu.can_delete,
+    };
+
+    const updated = await this.roleMenuRepository.update(existingRoleMenu.role_menu_id, updateData, updatedBy);
+
+    if (updated) {
+      logger.info('Role menu permissions updated successfully', {
+        roleId,
+        menuId,
+        permissions: updateData
+      });
+    }
+
+    return updated;
   }
 
   async getRoleFeatures(roleId: number): Promise<RoleFeature[]> {

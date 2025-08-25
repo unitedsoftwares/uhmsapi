@@ -52,7 +52,7 @@ export class AuthService {
    }
 
    async register(data: RegisterDTO): Promise<AuthResponse> {
-      // Check if user already exists by email
+
       const existingUser = await this.userRepository.findByEmail(data.email);
       if (existingUser) {
          const error = new ConflictError("Email address is already registered");
@@ -60,7 +60,6 @@ export class AuthService {
          throw error;
       }
 
-      // Check username uniqueness
       const existingUsername = await this.userRepository.findByUsername(data.username);
       if (existingUsername) {
          const error = new ConflictError("Username is already taken");
@@ -68,7 +67,6 @@ export class AuthService {
          throw error;
       }
 
-      // Check if email exists in employees table (for multi-tenant scenarios)
       const checkPool = this.userRepository.getPool();
       const [existingEmployee] = await checkPool.execute(
          "SELECT employee_id FROM employees WHERE email = ?",
@@ -80,7 +78,7 @@ export class AuthService {
          throw error;
       }
 
-      // Hash password
+    
       const passwordHash = await bcrypt.hash(data.password, config.security.bcryptRounds);
 
       // Start transaction to create company, branch, employee and user
@@ -240,7 +238,6 @@ export class AuthService {
       const roleFeatureRepo = new RoleFeatureRepository();
       const menuRepo = new MenuRepository();
       const roleMenus = await roleMenuRepo.findByRoleId(user.role_id!);
-
       const roleFeatures = await roleFeatureRepo.findByRoleId(user.role_id!);
       const roleMenusWithDetails = await Promise.all(
          roleMenus.map(async (rm) => {
